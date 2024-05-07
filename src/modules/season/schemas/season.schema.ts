@@ -5,7 +5,7 @@ export type SeasonDocument = HydratedDocument<Season>;
 
 @Schema()
 export class Season {
-  id: string;
+  private _id: string;
 
   @Prop()
   title: string;

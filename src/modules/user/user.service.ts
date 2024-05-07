@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './schemas/user.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDTO } from './dto/create-user.dto';
-import { UpdateUserDTO } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { resourceUsage } from 'process';
+import { IUser } from './interfaces/user.interface';
 
 const salt = Number(process.env.SALT);
 
@@ -16,30 +15,21 @@ export class UserService {
     private userModel: Model<User>,
   ) {}
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<IUser> {
     return await this.userModel.findOne({ email });
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<IUser> {
     return await this.userModel.findById(id);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userModel.find();
-  }
-
-  async create(createUserDto: CreateUserDTO): Promise<User> {
+  async create(createUserDto: CreateUserDTO): Promise<IUser> {
     const { password } = createUserDto;
     const hash = await bcrypt.hash(password, salt);
-    return await this.userModel.create({ ...createUserDto, password: hash });
-  }
-
-  update(id: string, body: UpdateUserDTO): void {
-    this.userModel.updateOne({ _id: id }, body).exec();
-  }
-
-  remove(id: string): void {
-    this.userModel.deleteOne({ _id: id }).exec();
+    return await this.userModel.create({
+      ...createUserDto,
+      password: hash,
+    });
   }
 
   async addAccount(id: string, account: string): Promise<boolean> {
@@ -49,6 +39,4 @@ export class UserService {
 
     return acknowledged;
   }
-
-  
 }

@@ -4,10 +4,8 @@ import { compare } from 'bcrypt';
 import { User } from '../user/schemas/user.schema';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-
-interface ISignIn {
-  accessToken: string;
-}
+import { IUser } from '../user/interfaces/user.interface';
+import { ISignIn } from './interfaces/signIn.interface';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +15,7 @@ export class AuthService {
   ) {}
 
   async signIn({ email, password }: AuthUserDTO): Promise<ISignIn> {
-    const foundUser: User = await this.userService.findByEmail(email);
+    const foundUser: IUser = await this.userService.findByEmail(email);
 
     if (!foundUser)
       throw new HttpException('Email not found', HttpStatus.UNAUTHORIZED);

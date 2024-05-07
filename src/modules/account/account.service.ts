@@ -2,10 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Account } from './schemas/account.schema';
-import { CreateAccountDTO } from './dto/create-accout-dto';
+import { CreateAccountOnCurrentSeasonDTO } from './dto/create-accout-on-current-season.dto';
 import { SeasonService } from '../season/season.service';
 import { UserService } from '../user/user.service';
-import { User } from '../user/schemas/user.schema';
+import { IAccount } from './interfaces/account.interface';
+import { CreateAccountDTO } from './dto/create-accout.dto';
 
 @Injectable()
 export class AccountService {
@@ -16,20 +17,14 @@ export class AccountService {
     private userService: UserService,
   ) {}
 
-  async findAll(): Promise<Account[]> {
-    return await this.accountModel.find();
-  }
-
   async createUserAccountOnCurrentSeason(
+    createAccountOnCurrentSeasonDTO: CreateAccountOnCurrentSeasonDTO,
     userId: string,
-    createAccountDTO: CreateAccountDTO,
   ): Promise<boolean> {
-    //find user or throw exepction
     const foundUser = await this.userService.findOne(userId);
     if (!foundUser)
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
 
-    // find current season
     const currentSeason = await this.seasonService.findCurrentSeason();
     if (!currentSeason)
       throw new HttpException(
@@ -37,17 +32,15 @@ export class AccountService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
 
-    const { id: currentSeasonid } = currentSeason;
-
-    // create Account
-    const account = await this.accountModel.create({
-      ...createAccountDTO,
-      season: currentSeasonid,
+    const account = await this.createAccount({
+      ...createAccountOnCurrentSeasonDTO,
+      season: currentSeason.id,
     });
 
-    // add account to user
-    const didItBound = await this.userService.addAccount(userId, account.id);
+    return await this.userService.addAccount(userId, account.id);
+  }
 
-    return didItBound;
+  async createAccount(createAccountDTO: CreateAccountDTO): Promise<IAccount> {
+    return await this.accountModel.create(createAccountDTO);
   }
 }

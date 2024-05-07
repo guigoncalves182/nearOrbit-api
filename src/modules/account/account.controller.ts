@@ -1,25 +1,20 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Account } from './schemas/account.schema';
 import { AccountService } from './account.service';
-import { CreateAccountDTO } from './dto/create-accout-dto';
+import { CreateAccountOnCurrentSeasonDTO } from './dto/create-accout-on-current-season.dto';
 
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Get()
-  findAll(): Promise<Account[]> {
-    return this.accountService.findAll();
-  }
-
   @Post(':userId')
   async createAccountOnCurrentSeason(
-    @Body() createAccountDTO: CreateAccountDTO,
+    @Body() createAccountDTO: CreateAccountOnCurrentSeasonDTO,
     @Param('userId') userId: string,
   ): Promise<boolean> {
     return await this.accountService.createUserAccountOnCurrentSeason(
-      userId,
       createAccountDTO,
+      userId,
     );
   }
 }

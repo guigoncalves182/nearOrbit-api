@@ -6,6 +6,8 @@ export type AccountDocument = HydratedDocument<Account>;
 
 @Schema()
 export class Account {
+  private _id: string;
+  
   @Prop({ required: true })
   power: number;
 
