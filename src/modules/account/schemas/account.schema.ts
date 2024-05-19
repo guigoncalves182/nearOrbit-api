@@ -17,6 +17,9 @@ export class Account extends Document {
 
   @Prop({ type: String, ref: Season.name, required: true })
   season: string;
+
+  @Prop({ default: 100 })
+  energy: number;
 }
 
 export const AccountSchema = SchemaFactory.createForClass(Account);
