@@ -1,12 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
 export type SeasonDocument = HydratedDocument<Season>;
 
 @Schema()
-export class Season {
-  private _id: string;
-
+export class Season extends Document {
   @Prop()
   title: string;
 

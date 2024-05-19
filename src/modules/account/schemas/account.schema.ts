@@ -1,13 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 import { Season } from 'src/modules/season/schemas/season.schema';
 
 export type AccountDocument = HydratedDocument<Account>;
 
 @Schema()
-export class Account {
-  private _id: string;
-  
+export class Account extends Document {
   @Prop({ required: true })
   power: number;
 

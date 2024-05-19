@@ -1,13 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 import { Account } from 'src/modules/account/schemas/account.schema';
 
 export type userDocument = HydratedDocument<User>;
 
 @Schema()
-export class User { 
-  private _id: string;
-  
+export class User extends Document {
   @Prop({ required: true })
   fullName: string;
 

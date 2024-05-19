@@ -5,7 +5,6 @@ import { Account } from './schemas/account.schema';
 import { CreateAccountOnCurrentSeasonDTO } from './dto/create-accout-on-current-season.dto';
 import { SeasonService } from '../season/season.service';
 import { UserService } from '../user/user.service';
-import { IAccount } from './interfaces/account.interface';
 import { CreateAccountDTO } from './dto/create-accout.dto';
 
 @Injectable()
@@ -34,13 +33,13 @@ export class AccountService {
 
     const account = await this.createAccount({
       ...createAccountOnCurrentSeasonDTO,
-      season: currentSeason.id,
+      season: currentSeason._id,
     });
 
-    return await this.userService.addAccount(userId, account.id);
+    return await this.userService.addAccount(userId, account._id);
   }
 
-  async createAccount(createAccountDTO: CreateAccountDTO): Promise<IAccount> {
+  async createAccount(createAccountDTO: CreateAccountDTO): Promise<Account> {
     return await this.accountModel.create(createAccountDTO);
   }
 }
