@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Account } from './schemas/account.schema';
 import { CreateAccountOnCurrentSeasonDTO } from './dto/create-accout-on-current-season.dto';
 import { SeasonService } from '../season/season.service';
@@ -42,4 +42,20 @@ export class AccountService {
   async createAccount(createAccountDTO: CreateAccountDTO): Promise<Account> {
     return await this.accountModel.create(createAccountDTO);
   }
+
+  async refreshEnergyOnCurrentSeason(energy: number): Promise<UpdateWriteOpResult> {  
+    const currentSeason = await this.seasonService.findCurrentSeason();
+    const maxEnergy = Number(process.env.MAX_ENERGY)
+
+    if (!currentSeason)
+        throw new HttpException(
+            'Season not found',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+
+    return await this.accountModel.updateMany(
+        { season: currentSeason._id },
+        [{$set: {energy: {$min: [{ $add: ["$energy", energy] }, maxEnergy]}}}]
+    );
+}
 }

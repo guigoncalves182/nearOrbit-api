@@ -14,6 +14,6 @@ import { UserModule } from '../user/user.module';
   ],
   controllers: [AccountController],
   providers: [AccountService],
-  exports: [],
+  exports: [AccountService],
 })
 export class AccountModule {}
